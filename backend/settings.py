@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load environment variables
 load_dotenv()
@@ -32,6 +33,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+INSTALLED_APPS += [
+    # Third-Party apps
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "jwt_passwordless",
 ]
 
 INSTALLED_APPS += [
@@ -116,6 +124,48 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# My settings
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+# Configure Django restframework
+# REST_FRAMEWORK = {
+#     "DEFAULT_AUTHENTICATION_CLASSES": (
+#         "rest_framework_simplejwt.authentication.JWTAuthentication"
+#     )
+# }
+
+
+# Configure Jwt passwordless
+PASSWORDLESS_AUTH = {
+    # Authentication types - 'EMAIL', 'MOBILE', or both
+    "PASSWORDLESS_AUTH_TYPES": ["EMAIL"],
+    # Token expiry time in seconds (default: 15 minutes)
+    "PASSWORDLESS_TOKEN_EXPIRE_TIME": 15 * 60,
+    # Email settings
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_EMAIL_SUBJECT": "Your Login Token",
+    "PASSWORDLESS_EMAIL_PLAINTEXT_MESSAGE": "Enter this token to sign in: %s",
+    # Optional: customize token length (3-6 digits)
+    "PASSWORDLESS_TOKEN_LENGTH": 6,
+    # Optional: Mark email as verified after successful authentication
+    "PASSWORDLESS_USER_MARK_EMAIL_VERIFIED": True,
+    "PASSWORDLESS_USER_EMAIL_VERIFIED_FIELD_NAME": "is_verified",
+    # Optional: For SMS authentication
+    # 'PASSWORDLESS_AUTH_TYPES': ['EMAIL', 'MOBILE'],
+    # 'PASSWORDLESS_MOBILE_NOREPLY_NUMBER': '+15551234567',
+    # 'PASSWORDLESS_MOBILE_MESSAGE': "Your login code is: %s",
+}
+
+
+# Configure djangorestframework-simplejwt
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+
+# My settings
+AUTH_USER_MODEL = "accounts.CustomUser"
+
+
+# Configure Email backend
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@example.com"
